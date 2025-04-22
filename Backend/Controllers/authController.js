@@ -157,9 +157,11 @@ export const verifyEmail = async (req, res) => {
 
 export const login = async (req, res) => {
   // res.send("login route");
-  const { email, password } = req.body;
+  const { identifier, password } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({
+      $or: [{ email: identifier }, { phone: identifier }],
+    });
     if (!user) {
       return res
         .status(400)
@@ -291,13 +293,15 @@ export const getAllUsers = async (req, res) => {
     res.status(200).json({
       success: true,
       // message: "User fetched successfully",
-      message: users.length ? `${users.length} user(s) fetched successfully` : "No users found",
+      message: users.length
+        ? `${users.length} user(s) fetched successfully`
+        : "No users found",
       totalUser: users.length,
       users,
     });
   } catch (e) {
     console.error("Error in getAllUsers", e.message);
-    res.status(500).json({      
+    res.status(500).json({
       success: false,
       message: "Failed to fetch users",
     });
