@@ -194,9 +194,14 @@ export const login = async (req, res) => {
 };
 
 export const forgotPassword = async (req, res) => {
-  const { email } = req.body;
+  // const { email } = req.body;
+  const { identifier } = req.body;
   try {
-    const user = await User.findOne({ email });
+    // const user = await User.findOne({ email });
+
+    const user = await User.findOne({
+      $or: [{ email: identifier }, { phone: identifier }],
+    });
 
     if (!user) {
       return res
