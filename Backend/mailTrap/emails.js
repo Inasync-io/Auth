@@ -5,8 +5,9 @@ import {
 } from "./emailTemplates.js";
 import { sender, transport } from "./mailTrapConfig.js";
 
-export const sendVerificationEmail = async (email, verificationToken) => {
-  const recipient = email;
+export const sendVerificationEmail = async (identifier, verificationToken) => {
+  const recipient = identifier;
+  console.log("recipient: ", recipient);
 
   try {
     const response = await transport.sendMail({
@@ -28,8 +29,8 @@ export const sendVerificationEmail = async (email, verificationToken) => {
   }
 };
 
-export const sendWelcomeEmail = async (email, name) => {
-  const recipient = email;
+export const sendWelcomeEmail = async (identifier, name) => {
+  const recipient = identifier;
   console.log("recipient: ", recipient);
 
   try {
@@ -52,8 +53,8 @@ export const sendWelcomeEmail = async (email, name) => {
   }
 };
 
-export const sendPasswordResetEmail = async (email, resetURL) => {
-  const recipient = email;
+export const sendPasswordResetEmail = async (identifier, resetURL) => {
+  const recipient = identifier;
 
   try {
     const res = await transport.sendMail({
@@ -72,8 +73,8 @@ export const sendPasswordResetEmail = async (email, resetURL) => {
   }
 };
 
-export const sendResetSuccessEmail = async (email) => {
-  const recipient = email;
+export const sendResetSuccessEmail = async (identifier) => {
+  const recipient = identifier;
 
   try {
     const res = await transport.sendMail({

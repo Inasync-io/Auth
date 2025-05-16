@@ -12,17 +12,26 @@ import {
 import { sendOtp } from "../twilio/smsConfig.js";
 
 export const signup = async (req, res) => {
-  const { email, phone, password, name } = req.body;
+  const { identifier, password, name } = req.body;
   // res.send('signup route');
   try {
-    if ((!email && !phone) || !password || !name) {
+    if (!identifier || !password || !name) {
       throw new Error("Email or phone, password, and name are required.");
     }
 
-    const query = {};
-    if (email) query.email = email;
-    if (phone) query.phone = phone;
+    // const query = {};
+    // if (identifier) query.identifier = identifier;
 
+    const isEmail = /^[\w.-]+@[\w-]+\.[\w-]{2,4}$/.test(identifier);
+    const isPhone = /^\+?[1-9]\d{1,14}$/.test(identifier);
+
+    if (!isEmail && !isPhone) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid email or phone format." });
+    }
+    
+    const query = isEmail ? { email: identifier } : isPhone ? { phone: identifier } : {};
     const userAlreadyExists = await User.findOne(query);
 
     // const userAlreadyExists = await User.findOne({
@@ -42,8 +51,9 @@ export const signup = async (req, res) => {
       100000 + Math.random() * 900000
     ).toString();
     const user = new User({
-      email: email || null,
-      phone: phone || null,
+      email: identifier.includes("@") ? identifier : null,
+      phone: identifier.includes("@") ? null : identifier,
+      // identifier: identifier, || null,
       password: hashedPassword,
       name,
       verificationToken,
@@ -55,10 +65,10 @@ export const signup = async (req, res) => {
     // jwt
     generateTokenAndSetCookie(res, user._id);
 
-    if (email) {
-      await sendVerificationEmail(user.email, verificationToken);
+    if (isEmail) {
+      await sendVerificationEmail(identifier, verificationToken);
     } else {
-      await sendOtp(user.phone, verificationToken);
+      await sendOtp(identifier, verificationToken);
     }
 
     res.status(201).json({
