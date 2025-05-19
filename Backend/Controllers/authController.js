@@ -27,8 +27,9 @@ export const signup = async (req, res) => {
 
     if (!isEmail && !isPhone) {
       return res
+        
         .status(400)
-        .json({ success: false, message: "Invalid email or phone format." });
+        .json({ code: 400, success: false, message: "Invalid email or phone format." });
     }
     
     const query = isEmail ? { email: identifier } : isPhone ? { phone: identifier } : {};
@@ -41,8 +42,8 @@ export const signup = async (req, res) => {
 
     if (userAlreadyExists) {
       return res
-        .status(400)
-        .json({ success: false, message: "User already exists" });
+        .status(409)
+        .json({ code: 409, success: false, message: "User already exists", description: "The email address is already in use." });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -72,6 +73,7 @@ export const signup = async (req, res) => {
     }
 
     res.status(201).json({
+      code: 201,
       success: true,
       message: "User created successsfully",
       user: {
@@ -80,7 +82,7 @@ export const signup = async (req, res) => {
       },
     });
   } catch (e) {
-    res.status(400).json({ success: false, message: e.message });
+    res.status(400).json({ code: 400, success: false, message: e.message });
   }
 };
 
@@ -96,6 +98,7 @@ export const verifyPhone = async (req, res) => {
 
     if (!user) {
       return res.status(400).json({
+        code: 400,
         success: false,
         message: "Invailed or expired OTP.",
       });
@@ -107,6 +110,7 @@ export const verifyPhone = async (req, res) => {
     await user.save();
 
     res.status(200).json({
+      code: 200,
       success: true,
       message: "Phone number verified successfully.",
       user: {
@@ -116,7 +120,8 @@ export const verifyPhone = async (req, res) => {
     });
   } catch (e) {
     console.error("Error verification phone: ", e);
-    res.ststus(500).json({
+    res.status(500).json({
+      code: 500,
       success: false,
       message: "An error occurred while verifying the phone number.",
     });
@@ -133,6 +138,7 @@ export const verifyEmail = async (req, res) => {
 
     if (!user) {
       return res.status(400).json({
+        code: 400,
         success: false,
         message: "Invalid or expired verification code",
       });
@@ -146,6 +152,7 @@ export const verifyEmail = async (req, res) => {
     await sendWelcomeEmail(user.email, user.name);
 
     res.status(200).json({
+      code: 200,
       success: true,
       message: "Email verified successfully",
       user: {
@@ -158,6 +165,7 @@ export const verifyEmail = async (req, res) => {
 
     // Send an error response back to the client
     res.status(500).json({
+      code: 500,
       success: false,
       message:
         "An error occurred while sending the welcome email or verifying the user.",
@@ -175,13 +183,13 @@ export const login = async (req, res) => {
     if (!user) {
       return res
         .status(400)
-        .json({ success: false, message: "Invalid credentials" });
+        .json({ code: 400, success: false, message: "Invalid credentials" });
     }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res
         .status(400)
-        .json({ success: false, message: "Invalid credentials" });
+        .json({ code: 400, success: false, message: "Invalid credentials" });
     }
 
     generateTokenAndSetCookie(res, user._id);
@@ -190,6 +198,7 @@ export const login = async (req, res) => {
     await user.save();
 
     res.status(200).json({
+      code: 200,
       success: true,
       message: "Logged in successfully",
       user: {
@@ -199,7 +208,7 @@ export const login = async (req, res) => {
     });
   } catch (error) {
     console.log("Error in login : ", error);
-    res.status(400).json({ success: false, message: error.message });
+    res.status(400).json({ code: 400, success: false, message: error.message });
   }
 };
 
@@ -216,7 +225,7 @@ export const forgotPassword = async (req, res) => {
     if (!user) {
       return res
         .status(400)
-        .json({ success: false, message: "User not found" });
+        .json({ code: 400, success: false, message: "User not found" });
     }
 
     // Generate reset token
@@ -235,12 +244,13 @@ export const forgotPassword = async (req, res) => {
     );
 
     res.status(200).json({
+      code: 200,
       success: true,
       message: "Password reset link sent to your email",
     });
   } catch (error) {
     console.log("Error in forgotPassword ", error);
-    res.status(400).json({ success: false, message: error.message });
+    res.status(400).json({ code: 400, success: false, message: error.message });
   }
 };
 
@@ -257,7 +267,7 @@ export const resetPassword = async (req, res) => {
     if (!user) {
       return res
         .status(400)
-        .json({ success: false, message: " invalid or expired reset token" });
+        .json({ code: 400, success: false, message: " invalid or expired reset token" });
     }
 
     // Update password
@@ -272,17 +282,17 @@ export const resetPassword = async (req, res) => {
 
     res
       .status(200)
-      .json({ success: true, message: "Password reset successfully" });
+      .json({ code: 200, success: true, message: "Password reset successfully" });
   } catch (error) {
     console.log("Error in resetPassword ", error);
-    res.status(400).json({ success: false, message: error.message });
+    res.status(400).json({ code: 400, success: false, message: error.message });
   }
 };
 
 export const logout = async (req, res) => {
   // res.send("logout route");
   res.clearCookie("token");
-  res.status(200).json({ success: true, message: "Logged out" });
+  res.status(200).json({ code: 200, success: true, message: "Logged out" });
 };
 
 export const checkAuth = async (req, res) => {
@@ -292,13 +302,13 @@ export const checkAuth = async (req, res) => {
     if (!user) {
       return res
         .status(400)
-        .json({ success: false, message: "User not found" });
+        .json({ code: 400, success: false, message: "User not found" });
     }
 
-    res.status(200).json({ success: true, user });
+    res.status(200).json({ code: 200, success: true, user });
   } catch (error) {
     console.log("Error in CheckAuth ", error);
-    res.status(400).json({ success: false, message: error.message });
+    res.status(400).json({ code: 400, success: false, message: error.message });
   }
 };
 
@@ -306,6 +316,7 @@ export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find().select("-password -verificationToken");
     res.status(200).json({
+      code: 200,
       success: true,
       // message: "User fetched successfully",
       message: users.length
@@ -317,6 +328,7 @@ export const getAllUsers = async (req, res) => {
   } catch (e) {
     console.error("Error in getAllUsers", e.message);
     res.status(500).json({
+      code: 500,
       success: false,
       message: "Failed to fetch users",
     });
