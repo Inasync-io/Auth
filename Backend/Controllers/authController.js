@@ -27,12 +27,20 @@ export const signup = async (req, res) => {
 
     if (!isEmail && !isPhone) {
       return res
-        
+
         .status(400)
-        .json({ code: 400, success: false, message: "Invalid email or phone format." });
+        .json({
+          code: 400,
+          success: false,
+          message: "Invalid email or phone format.",
+        });
     }
-    
-    const query = isEmail ? { email: identifier } : isPhone ? { phone: identifier } : {};
+
+    const query = isEmail
+      ? { email: identifier }
+      : isPhone
+      ? { phone: identifier }
+      : {};
     const userAlreadyExists = await User.findOne(query);
 
     // const userAlreadyExists = await User.findOne({
@@ -43,7 +51,12 @@ export const signup = async (req, res) => {
     if (userAlreadyExists) {
       return res
         .status(409)
-        .json({ code: 409, success: false, message: "User already exists", description: "The email address is already in use." });
+        .json({
+          code: 409,
+          success: false,
+          message: "User already exists",
+          description: "The email address is already in use.",
+        });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -267,7 +280,11 @@ export const resetPassword = async (req, res) => {
     if (!user) {
       return res
         .status(400)
-        .json({ code: 400, success: false, message: " invalid or expired reset token" });
+        .json({
+          code: 400,
+          success: false,
+          message: " invalid or expired reset token",
+        });
     }
 
     // Update password
@@ -282,7 +299,11 @@ export const resetPassword = async (req, res) => {
 
     res
       .status(200)
-      .json({ code: 200, success: true, message: "Password reset successfully" });
+      .json({
+        code: 200,
+        success: true,
+        message: "Password reset successfully",
+      });
   } catch (error) {
     console.log("Error in resetPassword ", error);
     res.status(400).json({ code: 400, success: false, message: error.message });
