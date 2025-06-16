@@ -22,7 +22,4 @@ router.post("/reset-password/:token", resetPassword);
 
 router.get("/users",getAllUsers);
 
-// export default router
-module.exports = router;
-
 export default router;
