@@ -11,7 +11,7 @@ const app = express();
 // const PORT = process.env.PORT || 5000
 
 // Connect DB on cold start
-connectDB();
+await connectDB();
 
 app.use(cors({
     // origin: "http://localhost:3000", 
