@@ -8,7 +8,10 @@ import authRouters from './routes/authRoute.js';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000
+// const PORT = process.env.PORT || 5000
+
+// Connect DB on cold start
+connectDB();
 
 app.use(cors({
     origin: "http://localhost:3000", 
@@ -24,7 +27,7 @@ app.get("/", (req, res) => {
     code: 200,
     status: "Live",
     project_name: "Node - Auth",
-    developed_by: "https://github.com/YOUR_USERNAME"
+    developed_by: "https://github.com/Inasync-io"
   });
 });
 
