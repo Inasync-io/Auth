@@ -1,9 +1,10 @@
 {
-  "name": "auth",
+  "name": "node-auth",
   "version": "1.0.0",
   "main": "Backend/index.js",
   "scripts": {
-    "dev": "nodemon Backend/index.js"
+    "dev": "nodemon Backend/index.js",
+    "start": "node Backend/index.js"
   },
   "keywords": [],
   "author": "",

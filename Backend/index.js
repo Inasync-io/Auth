@@ -1,4 +1,5 @@
 import express from 'express';
+
 import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from "cookie-parser";
@@ -19,12 +20,20 @@ app.use(cors({
 app.use(express.json()); // allows us to parse incoming requests:req.body
 app.use(cookieParser()); // allows us to parse incoming cookies
 
-// app.get("/", (req, res) => {
-//     res.send('Hello world');
-// }
+app.get("/", (req, res) => {
+  res.status(200).json({
+    code: 200,
+    status: "Live",
+    project_name: "Node - Auth",
+    developed_by: "https://github.com/YOUR_USERNAME"
+  });
+});
+
 app.use("/api", authRouters);
 
-app.listen(PORT, () => {
-    connectDB();
-    console.log(`Server is running on port ${PORT}`);
-})
+// app.listen(PORT, () => {
+//     connectDB();
+//     console.log(`Server is running on port ${PORT}`);
+// })
+
+module.exports = app;

@@ -26,14 +26,11 @@ export const signup = async (req, res) => {
     const isPhone = /^\+?[1-9]\d{1,14}$/.test(identifier);
 
     if (!isEmail && !isPhone) {
-      return res
-
-        .status(400)
-        .json({
-          code: 400,
-          success: false,
-          message: "Invalid email or phone format.",
-        });
+      return res.status(400).json({
+        code: 400,
+        success: false,
+        message: "Invalid email or phone format.",
+      });
     }
 
     const query = isEmail
@@ -49,14 +46,12 @@ export const signup = async (req, res) => {
     console.log("userAlreadyExists: ", userAlreadyExists);
 
     if (userAlreadyExists) {
-      return res
-        .status(409)
-        .json({
-          code: 409,
-          success: false,
-          message: "User already exists",
-          description: "The email address is already in use.",
-        });
+      return res.status(409).json({
+        code: 409,
+        success: false,
+        message: "User already exists",
+        description: "The email address is already in use.",
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -253,13 +248,17 @@ export const forgotPassword = async (req, res) => {
     // Send email
     await sendPasswordResetEmail(
       user.email,
-      `${process.env.CLIENT_URL}/reset-password/${resetToken}`
+      `${process.env.CLIENT_URL}/resetPassword/${resetToken}`
     );
 
     res.status(200).json({
       code: 200,
       success: true,
       message: "Password reset link sent to your email",
+      user: {
+        ...user._doc,
+        password: undefined,
+      },
     });
   } catch (error) {
     console.log("Error in forgotPassword ", error);
@@ -278,13 +277,11 @@ export const resetPassword = async (req, res) => {
     });
 
     if (!user) {
-      return res
-        .status(400)
-        .json({
-          code: 400,
-          success: false,
-          message: " invalid or expired reset token",
-        });
+      return res.status(400).json({
+        code: 400,
+        success: false,
+        message: " invalid or expired reset token",
+      });
     }
 
     // Update password
@@ -297,13 +294,11 @@ export const resetPassword = async (req, res) => {
 
     await sendResetSuccessEmail(user.email);
 
-    res
-      .status(200)
-      .json({
-        code: 200,
-        success: true,
-        message: "Password reset successfully",
-      });
+    res.status(200).json({
+      code: 200,
+      success: true,
+      message: "Password reset successfully",
+    });
   } catch (error) {
     console.log("Error in resetPassword ", error);
     res.status(400).json({ code: 400, success: false, message: error.message });
