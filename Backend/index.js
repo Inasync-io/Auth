@@ -8,14 +8,10 @@ import authRouters from './routes/authRoute.js';
 dotenv.config();
 
 const app = express();
-// const PORT = process.env.PORT || 5000
-
-// Connect DB on cold start
-await connectDB();
+const PORT = process.env.PORT || 5000
 
 app.use(cors({
-    // origin: "http://localhost:3000", 
-    origin: "*",
+    origin: "http://localhost:3000", 
     methods: ["GET", "POST", "PUT", "DELETE"], 
     credentials: true             
   }));
@@ -34,9 +30,7 @@ app.get("/", (req, res) => {
 
 app.use("/api", authRouters);
 
-// app.listen(PORT, () => {
-//     connectDB();
-//     console.log(`Server is running on port ${PORT}`);
-// })
-
-export default app;
+app.listen(PORT, () => {
+    connectDB();
+    console.log(`Server is running on port ${PORT}`);
+})

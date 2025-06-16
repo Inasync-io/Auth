@@ -22,4 +22,4 @@ router.post("/reset-password/:token", resetPassword);
 
 router.get("/users",getAllUsers);
 
-export default router;
+export default router
