@@ -6,7 +6,7 @@
     "node": "14.x"
   },
   "scripts": {
-    "dev": "nodemon Backend/index.js",
+    "dev": "node Backend/index.js",
     "start": "node Backend/index.js"
   },
   "keywords": [],
