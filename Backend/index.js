@@ -4,11 +4,12 @@ import cors from 'cors';
 import cookieParser from "cookie-parser";
 import { connectDB } from './db/connectDB.js';
 import authRouters from './routes/authRoute.js';
+import { createServer } from 'http';
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT
+// const PORT = process.env.PORT
 
 connectDB();
 
@@ -38,7 +39,5 @@ app.use("/api", authRouters);
 //   });
 // }
 
-export default async function handler(req, res) {
-  await app(req, res);
-}
+export default createServer(app);
 
