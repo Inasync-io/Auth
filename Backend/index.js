@@ -32,7 +32,11 @@ app.get("/", (_req, res) => {
 
 app.use("/api", authRouters);
 
-app.listen(PORT, () => {
-    // connectDB();
-    console.log(`Server is running on port ${PORT}`);
-})
+if (process.env.NODE_ENV !== "dev") {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running at http://localhost:${PORT}`);
+  });
+}
+
+export default app;
+
